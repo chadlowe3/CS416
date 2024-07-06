@@ -1,8 +1,23 @@
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <title>Narrative Visualization</title>
-  </head>
-  <body>
-    <h1>Finish me!</h1>
-  </body>
+</head>
+<body>
+<h1>Finish me!</h1>
+<!-- Place your other elements and content above -->
+
+<div id="chart"></div>
+
+<!-- D3 and D3 Annotations are loaded at the end -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/d3-svg-annotation"></script>
+<script src="js/main.js"></script>
+<!-- Call a function when the document is ready -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeChart();
+    });
+</script>
+</body>
 </html>
