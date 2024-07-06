@@ -1,0 +1,47 @@
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+.grid path {
+    stroke-width: 0;
+}
+
+.slider {
+    width: 80%;
+    margin: 20px;
+}
+
+.track, .track-inset {
+    stroke: #ddd;
+    stroke-width: 10;
+    stroke-linecap: round;
+}
+
+.track-inset {
+    stroke: #ccc;
+}
+
+.highlighted-range {
+    fill: #007bff;  /* Blue color for the highlighted range */
+    height: 10px;   /* Height of the highlighted range */
+    y: -5px;        /* Positioning adjustment to align with the track */
+    cursor: pointer; /* Change cursor to indicate this area is draggable (if needed) */
+}
+
+.handle {
+    fill: #fff;
+    stroke: #000;
+    stroke-opacity: 0.5;
+    stroke-width: 1.5;
+    cursor: pointer;
+}
+
+.label {
+    fill: #333;
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    text-anchor: middle;
+    : middle;
+    cursor: default;
+}
