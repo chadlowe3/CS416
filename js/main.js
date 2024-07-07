@@ -1,12 +1,13 @@
 let chartSvg, xScale, yScale, line, transistorData, mosfetScaleData;
 let isMooresLawVisible = true;
 let isMosfetScaleVisible = true;
+let isLogScale = true;
 
 let startYear = 1971;
 let endYear = 2021;
 
 const CONFIG = {
-    AXIS_TRANSITION_TIME: 50
+    AXIS_TRANSITION_TIME: 1000
 };
 
 const margin = {top: 20, right: 20, bottom: 50, left: 60},
@@ -17,6 +18,16 @@ const margin = {top: 20, right: 20, bottom: 50, left: 60},
 document.addEventListener('DOMContentLoaded', async () => {
     await initializeChart();
     updateChart();
+
+    const scaleToggle = document.getElementById('scaleToggle');
+    if (scaleToggle) {
+        scaleToggle.addEventListener('change', (event) => {
+            isLogScale = event.target.checked;
+            updateChart(startYear, endYear);
+        });
+    } else {
+        console.error("Scale toggle element not found");
+    }
 
     createDateRangeSlider('#date_range', 1971, 2021, (newStartYear, newEndYear) => {
         startYear = newStartYear;
@@ -127,7 +138,18 @@ function updateChart(startYear = null, endYear = null) {
 
     // X scale fits the data exactly.
     xScale.domain(d3.extent(filteredData, d => d.Year));
-    yScale.domain([minY, maxY]);
+
+    if (isLogScale) {
+        yScale = d3.scaleLog()
+            .base(10)
+            .domain([Math.pow(10, Math.floor(Math.log10(minTransistors))),
+                Math.pow(10, Math.ceil(Math.log10(maxTransistors)))])
+            .range([height, 0]);
+    } else {
+        yScale = d3.scaleLinear()
+            .domain([0, maxTransistors])
+            .range([height, 0]);
+    }
 
     // Update axes with transition
     chartSvg.select(".x-axis")
@@ -166,7 +188,7 @@ function updateChart(startYear = null, endYear = null) {
     chartSvg.select(".moores-law-line").remove();
 
     // Add Moore's Law visualization
-    addMooresLaw(isMooresLawVisible);
+    addMooresLaw(startYear, endYear, isMooresLawVisible);
 
     // Add Mosfet scale visualization
     addMosfetScaleBands(startYear, endYear, isMosfetScaleVisible);
@@ -274,32 +296,45 @@ function createDateRangeSlider(containerSelector, initialStartYear, initialEndYe
     };
 }
 
-function generateMooresLawData(startYear, endYear, initialTransistors) {
+function generateMooresLawData(detailStartYear, detailEndYear, initialTransistors) {
     const data = [];
-    for (let year = startYear; year <= endYear; year++) {
-        const yearsElapsed = year - startYear;
+    for (let year = detailStartYear; year <= detailEndYear; year++) {
+        const yearsElapsed = year - detailStartYear;
         const doublings = yearsElapsed / 2;
         const transistors = initialTransistors * Math.pow(2, doublings);
-        data.push({ Year: new Date(year, 0, 1), TransistorsPerMicroprocessor: transistors });
+        data.push({Year: new Date(year, 0, 1), TransistorsPerMicroprocessor: transistors});
     }
     return data;
 }
 
-function addMooresLaw(visible = true) {
-
-    //console.log("addMooresLaw called with visible:", visible);
+function addMooresLaw(detailStartYear, detailEndYear, visible = true) {
 
     if (!visible) {
-        chartSvg.selectAll(".moores-law").remove();
+        chartSvg.selectAll(".moores-law-area, .moores-law-line").remove();
         return;
     }
+
+    // Remove existing Moore's Law elements
+    chartSvg.selectAll(".moores-law-area, .moores-law-line, #chart-area").remove();
 
     const years = transistorData.map(d => d.Year.getFullYear());
     const startYear = Math.min(...years);
     const endYear = Math.max(...years);
     const initialTransistors = transistorData[0].TransistorsPerMicroprocessor;
 
+    console.log("Data range:", {startYear, endYear, initialTransistors});
+
     const mooresLawData = generateMooresLawData(startYear, endYear, initialTransistors);
+    console.log("Moore's Law data points:", mooresLawData.length);
+
+    // Create a clipping path
+    chartSvg.append("clipPath")
+        .attr("id", "chart-area")
+        .append("rect")
+        .attr("x", xScale(new Date(detailStartYear, 0, 1)))
+        .attr("y", 0)
+        .attr("width", xScale(new Date(detailEndYear, 0, 1)) - xScale(new Date(detailStartYear, 0, 1)))
+        .attr("height", height);
 
     // Create a grey area for Moore's Law channel
     const area = d3.area()
@@ -310,6 +345,7 @@ function addMooresLaw(visible = true) {
     chartSvg.append("path")
         .datum(mooresLawData)
         .attr("class", "moores-law-area")
+        .attr("clip-path", "url(#chart-area)")
         .attr("fill", "rgba(200, 200, 200, 0.3)")
         .attr("d", area);
 
@@ -321,6 +357,7 @@ function addMooresLaw(visible = true) {
     chartSvg.append("path")
         .datum(mooresLawData)
         .attr("class", "moores-law-line")
+        .attr("clip-path", "url(#chart-area)")
         .attr("fill", "none")
         .attr("stroke", "grey")
         .attr("stroke-width", 2)
@@ -328,9 +365,9 @@ function addMooresLaw(visible = true) {
         .attr("d", mooresLawLine);
 }
 
-function addMosfetScaleBands(startYear, endYear, visible = true) {
+function addMosfetScaleBands(detailStartYear, detailEndYear, visible = true) {
     // Filter the data based on the year range
-    const filteredData = mosfetScaleData.filter(d => d.Year >= startYear && d.Year <= endYear);
+    const filteredData = mosfetScaleData.filter(d => d.Year >= detailStartYear && d.Year <= detailEndYear);
 
     const fullColorScale = d3.scaleOrdinal(d3.schemeCategory10)
         .domain(mosfetScaleData.map((d, i) => i));
@@ -352,7 +389,7 @@ function addMosfetScaleBands(startYear, endYear, visible = true) {
             if (i === nodes.length - 1) {
                 return Math.max(0, xScale.range()[1] - xScale(new Date(d.Year, 0, 1)));
             }
-            return Math.max(0, xScale(new Date(filteredData[i+1].Year, 0, 1)) - xScale(new Date(d.Year, 0, 1)));
+            return Math.max(0, xScale(new Date(filteredData[i + 1].Year, 0, 1)) - xScale(new Date(d.Year, 0, 1)));
         })
         .attr("y", 0)
         .attr("height", height)
