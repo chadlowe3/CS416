@@ -1,4 +1,5 @@
 let chartSvg, xScale, yScale, line, transistorData;
+let isMooresLawVisible = false;
 
 const CONFIG = {
     AXIS_TRANSITION_TIME: 50
@@ -16,6 +17,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     createDateRangeSlider('#date_range', 1971, 2021, (startYear, endYear) => {
         updateChart(startYear, endYear);
     });
+
+    const mooresLawToggle = document.getElementById('mooresLawToggle');
+    if (mooresLawToggle) {
+        mooresLawToggle.addEventListener('change', (event) => {
+            isMooresLawVisible = event.target.checked;
+            updateChart();
+        });
+    } else {
+        console.error("Moore's Law toggle element not found");
+    }
 });
 
 async function initializeChart() {
@@ -135,6 +146,13 @@ function updateChart(startYear = null, endYear = null) {
         .datum(filteredData)
         .transition().duration(CONFIG.AXIS_TRANSITION_TIME)
         .attr("d", line);
+
+    // Remove existing Moore's Law elements
+    chartSvg.select(".moores-law-area").remove();
+    chartSvg.select(".moores-law-line").remove();
+
+    // Add Moore's Law visualization
+    addMooresLaw(isMooresLawVisible);
 }
 
 function createDateRangeSlider(containerSelector, initialStartYear, initialEndYear, onRangeChange) {
@@ -156,7 +174,7 @@ function createDateRangeSlider(containerSelector, initialStartYear, initialEndYe
     const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     const slider = g.append('g')
-        .attr('class', 'slider')
+        .attr('class', 'date-slider')
         .attr('transform', `translate(0,${height / 2})`);
 
     slider.append('line')
@@ -236,4 +254,59 @@ function createDateRangeSlider(containerSelector, initialStartYear, initialEndYe
             updateHighlightedRange();
         }
     };
+}
+
+function generateMooresLawData(startYear, endYear, initialTransistors) {
+    const data = [];
+    for (let year = startYear; year <= endYear; year++) {
+        const yearsElapsed = year - startYear;
+        const doublings = yearsElapsed / 2;
+        const transistors = initialTransistors * Math.pow(2, doublings);
+        data.push({ Year: new Date(year, 0, 1), TransistorsPerMicroprocessor: transistors });
+    }
+    return data;
+}
+
+function addMooresLaw(visible = true) {
+
+    //console.log("addMooresLaw called with visible:", visible);
+
+    if (!visible) {
+        console.log("Removing Moore's Law elements");
+        chartSvg.selectAll(".moores-law").remove();
+        return;
+    }
+
+    const years = transistorData.map(d => d.Year.getFullYear());
+    const startYear = Math.min(...years);
+    const endYear = Math.max(...years);
+    const initialTransistors = transistorData[0].TransistorsPerMicroprocessor;
+
+    const mooresLawData = generateMooresLawData(startYear, endYear, initialTransistors);
+
+    // Create a grey area for Moore's Law channel
+    const area = d3.area()
+        .x(d => xScale(d.Year))
+        .y0(d => yScale(d.TransistorsPerMicroprocessor / 2))
+        .y1(d => yScale(d.TransistorsPerMicroprocessor * 2));
+
+    chartSvg.append("path")
+        .datum(mooresLawData)
+        .attr("class", "moores-law-area")
+        .attr("fill", "rgba(200, 200, 200, 0.3)")
+        .attr("d", area);
+
+    // Add Moore's Law line
+    const mooresLawLine = d3.line()
+        .x(d => xScale(d.Year))
+        .y(d => yScale(d.TransistorsPerMicroprocessor));
+
+    chartSvg.append("path")
+        .datum(mooresLawData)
+        .attr("class", "moores-law-line")
+        .attr("fill", "none")
+        .attr("stroke", "grey")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5")
+        .attr("d", mooresLawLine);
 }

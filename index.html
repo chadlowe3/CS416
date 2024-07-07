@@ -11,13 +11,18 @@
 <h1>CPU Evolution</h1>
 <!-- Place your other elements and content above -->
 
-<div id="chart"></div>
-<div id="date_range"></div>
+<!-- Add toggle switch for Moore's Law -->
+<div class="toggle-container">
+    <label class="switch">
+        <input type="checkbox" id="mooresLawToggle">
+        <span class="slider round"></span>
+    </label>
+    <span>Show Moore's Law</span>
+</div>
 
-<!--<label>Start Year:</label>-->
-<!--<input type="range" id="startSlider" class="slider">-->
-<!--<label>End Year:</label>-->
-<!--<input type="range" id="endSlider" class="slider">-->
+<div id="chart"></div>
+<div id="date_range" class="date-slider"></div>
+
 
 <!-- D3 and D3 Annotations are loaded at the end -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
