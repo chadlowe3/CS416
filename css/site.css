@@ -107,3 +107,16 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+.process-node-band {
+    opacity: 0.3;
+}
+
+.process-node-label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    fill: black;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
