@@ -1,0 +1,35 @@
+
+Intro - Moore's Law
+
+Moore's Law is the observation that the transistor counts in an integrated crcuit double roughly every two years.
+
+Moore's law isn't a natural law, but rather a target that the semiconductor industry has used to set goals for the
+design and manufacturing of integrated circuits. Moore's Law has held remarkably for over 50 years.
+
+Click next to see how Moore's Law has held over the last half century of CPU manufacturing...
+
+
+
+Chart 1 - Overview of transistor counts in CPU's
+
+Here you see a plot of CPU transistor count over 50 years from 1971 to 2021. Doubling the transistor
+count every 2 years means that the transistor count in CPU's increases exponentially over time. By plotting
+this exponential increase on a logarithmic scale the line is straight, switching to a linear scale demonstrates
+the exponential increase better.
+
+
+Chart 2 - Moore's Law
+
+What would Moores Law have predicted? When we add Moore's Law to the chart, it can be seen that
+transitor count tracked almost perfectly for 5 decades.
+
+
+Chart 3 - CPU Process Size
+
+We said that Moore's Law wasn't a natrual law, but a goal for the manufacturing industry. In order to meet
+that goal, scientists have systematically reduced the size of the transistors that make up the CPU's. Measured
+first in micrometers, then nanometers. Smaller transistors mean more transistors can be packaged on a die.
+Here you see how transistor size has decreased over the years, allowing for Moore's Law to maintained.
+
+
+Interactive Chart
