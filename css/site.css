@@ -1,5 +1,6 @@
 /* General Styles */
 body, html {
+    background-color: #3498db;
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
@@ -49,6 +50,8 @@ body, html {
     transition: opacity 0.5s ease;
     opacity: 0;
     display: none;
+    max-width: 1600px; /* Adjust this value as needed */
+    margin: 0 auto;
 }
 
 #content.visible {
@@ -62,6 +65,17 @@ body, html {
     overflow-y: auto;
 }
 
+#narrative-container {
+    width: 350px;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+#extra-space {
+    width: 350px;
+    flex-shrink: 0;
+}
+
 .narrative-content {
     display: none;
 }
@@ -71,10 +85,12 @@ body, html {
 }
 
 #chart-container {
-    flex: 2;
+    flex-grow: 1;
     padding: 2rem;
     display: flex;
     flex-direction: column;
+    background-color: white;
+    margin: 0 20px;
 }
 
 /* Chart Styles */
@@ -84,9 +100,65 @@ body, html {
     margin-bottom: 20px;
 }
 
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
 .date-slider {
-    width: 100%;
+    width: 80%;
     margin-bottom: 20px;
+}
+
+.track, .track-inset {
+    stroke: #ddd;
+    stroke-width: 10;
+    stroke-linecap: round;
+}
+
+.track-inset {
+    stroke: #ccc;
+}
+
+.highlighted-range {
+    fill: #007bff;
+    height: 10px;
+    y: -5px;
+    cursor: pointer;
+}
+
+.handle {
+    fill: #fff;
+    stroke: #000;
+    stroke-opacity: 0.5;
+    stroke-width: 1.5;
+    cursor: pointer;
+}
+
+.label {
+    fill: #333;
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    text-anchor: middle;
+    cursor: default;
+}
+
+.process-node-band {
+    opacity: 0.3;
+}
+
+.process-node-label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    fill: black;
+    text-anchor: middle;
+    dominant-baseline: central;
 }
 
 /* Controls Styles */
@@ -99,7 +171,8 @@ body, html {
 .toggle-container {
     display: flex;
     align-items: center;
-    margin: 10px;
+    margin: 20px 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Switch Styles */
@@ -156,12 +229,15 @@ input:checked + .slider:before {
 }
 
 /* Navigation Styles */
+
 #navigation {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     background-color: #f8f9fa;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 #navigation-left {
@@ -235,4 +311,83 @@ button:disabled {
 .progress-step.active {
     background-color: #3498db;
     color: white;
+}
+
+#citations-icon {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    cursor: pointer;
+    transition: bottom 0.5s;
+}
+
+.icon-circle {
+    background-color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.icon-circle img {
+    width: 30px;
+    height: 30px;
+}
+
+#citations-popup {
+    position: fixed;
+    bottom: 80px;
+    left: 40px;
+    width: 300px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+#citations-popup .popup-content {
+    position: relative;
+}
+
+#citations-popup .close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+#citations-popup h3 {
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+#citations-popup ol {
+    padding-left: 20px;
+    margin: 0;
+}
+
+#citations-popup li {
+    margin-bottom: 6px;
+}
+
+#citations-popup a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+#citations-popup a:hover {
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
 }

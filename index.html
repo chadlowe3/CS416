@@ -8,15 +8,16 @@
     <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
+
 <div id="container">
     <div class="blue-bg" id="header">
         <h1>Moore's Law</h1>
         <div id="intro">
             <p>Moore's Law is the observation that the transistor counts in an integrated circuit double roughly every
                 two years.</p>
-            <p>Moore's law isn't a natural law, but rather a target that the semiconductor industry has used to set
-                goals for the design and manufacturing of integrated circuits. Moore's Law has held remarkably for over
-                50 years.</p>
+            <p>Moore's law isn't a natural law; it's a goal set by the semiconductor industry to drive the design
+                and manufacturing of integrated circuits. This law has remarkably held true for over 50 years.</p>
+            <p>Click <b>Begin</b> to see how Moore's Law has held over the last half century of CPU manufacturing...</p>
         </div>
     </div>
 
@@ -99,6 +100,28 @@
             <button id="next-btn" style="display: none;">Next</button>
         </div>
     </div>
+
+
+    <div id="citations-icon">
+        <div class="icon-circle">
+            <img alt="Citations" onclick="toggleCitations()" src="img/citation-icon.png"></div>
+    </div>
+
+    <div class="hidden" id="citations-popup">
+        <div class="popup-content">
+            <span class="close" onclick="toggleCitations()">&times;</span>
+            <h3>Citations</h3>
+            <ol>
+                <li>Karl Rupp, Microprocessor Trend Data (2022) – processed by Our World in Data</li>
+                <li><a href="https://en.wikipedia.org/wiki/Transistor_count" target="_blank">Transistor count -
+                    Wikipedia</a></li>
+                <li>Max Roser, Hannah Ritchie and Edouard Mathieu (2023) - “What is Moore's Law?” Published online at
+                    OurWorldInData.org. Retrieved from: <a href="https://ourworldindata.org/moores-law" target="_blank">https://ourworldindata.org/moores-law</a>
+                </li>
+            </ol>
+        </div>
+    </div>
+
 </div>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>

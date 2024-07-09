@@ -19,7 +19,10 @@ const ui = (() => {
         /* Chart Controls */
         scaleToggle: document.getElementById('scaleToggle'),
         mooresLawToggle: document.getElementById('mooresLawToggle'),
-        mosfetScaleToggle: document.getElementById('mosfetScaleToggle')
+        mosfetScaleToggle: document.getElementById('mosfetScaleToggle'),
+        /* Citations */
+        citationsIcon: document.getElementById('citations-icon'),
+        citationsPopup: document.getElementById('citations-popup')
     };
 })();
 
@@ -137,6 +140,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function toggleCitations() {
+    ui.citationsPopup.classList.toggle('hidden');
+}
+
 function initializeUI() {
 
     // Show only the Begin-button initially
@@ -155,6 +162,7 @@ function initializeUI() {
     ui.header.classList.remove('minimized');
     ui.content.classList.remove('visible');
 
+    ui.citationsIcon.bottom = '60px';
 }
 
 function goToStep(step) {
@@ -183,6 +191,9 @@ function updateButtons() {
     } else {
         ui.nextBtn.disabled = true;
     }
+
+    ui.citationsIcon.style.bottom = state.currentStep === 0 ? '20px' : '85px';
+    ui.citationsPopup.style.bottom = state.currentStep === 0 ? '80px' : '145px';
 }
 
 function updateNarrative() {

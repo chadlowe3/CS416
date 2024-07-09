@@ -1,12 +1,12 @@
 
 Intro - Moore's Law
 
-Moore's Law is the observation that the transistor counts in an integrated crcuit double roughly every two years.
+Moore's Law is the observation that the transistor counts in an integrated circuit double roughly every two years.
 
-Moore's law isn't a natural law, but rather a target that the semiconductor industry has used to set goals for the
-design and manufacturing of integrated circuits. Moore's Law has held remarkably for over 50 years.
+Moore's law isn't a natural law; it's a goal set by the semiconductor industry to drive the design
+and manufacturing of integrated circuits. This law has remarkably held true for over 50 years.
 
-Click next to see how Moore's Law has held over the last half century of CPU manufacturing...
+Click Begin to see how Moore's Law has held over the last half century of CPU manufacturing...
 
 
 
