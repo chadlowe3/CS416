@@ -1,60 +1,108 @@
-/* Grid styles */
-.grid line {
-    stroke: lightgrey;
-    stroke-opacity: 0.7;
-    shape-rendering: crispEdges;
-}
-.grid path {
-    stroke-width: 0;
-}
-
-/* Date range slider styles */
-.date-slider {
-    width: 80%;
-    margin: 20px;
-}
-
-.track, .track-inset {
-    stroke: #ddd;
-    stroke-width: 10;
-    stroke-linecap: round;
-}
-
-.track-inset {
-    stroke: #ccc;
-}
-
-.highlighted-range {
-    fill: #007bff;
-    height: 10px;
-    y: -5px;
-    cursor: pointer;
-}
-
-.handle {
-    fill: #fff;
-    stroke: #000;
-    stroke-opacity: 0.5;
-    stroke-width: 1.5;
-    cursor: pointer;
-}
-
-.label {
-    fill: #333;
-    font-size: 12px;
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
     font-family: 'Roboto', sans-serif;
-    text-anchor: middle;
-    cursor: default;
+    line-height: 1.6;
+    color: #333;
+    height: 100%;
+    overflow-x: hidden;
 }
 
-/* Toggle switch styles */
+#container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.blue-bg {
+    background-color: #3498db;
+    color: white;
+}
+
+/* Header Styles */
+#header {
+    text-align: center;
+    padding: 2rem;
+    transition: all 0.5s ease;
+}
+
+#header.minimized {
+    padding: 0.5rem;
+    font-size: 0.8em;
+}
+
+#header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#header p {
+    font-size: 1.2rem;
+    max-width: 800px;
+    margin: 1rem auto;
+}
+
+/* Content Styles */
+#content {
+    flex-grow: 1;
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    display: none;
+}
+
+#content.visible {
+    display: flex;
+    opacity: 1;
+}
+
+#narrative {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.narrative-content {
+    display: none;
+}
+
+.narrative-content.active {
+    display: block;
+}
+
+#chart-container {
+    flex: 2;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chart Styles */
+#chart {
+    width: 100%;
+    height: 500px;
+    margin-bottom: 20px;
+}
+
+.date-slider {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+/* Controls Styles */
+#controls {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
 .toggle-container {
     display: flex;
     align-items: center;
-    margin: 20px 0;
-    font-family: 'Roboto', sans-serif;
+    margin: 10px;
 }
 
+/* Switch Styles */
 .switch {
     position: relative;
     display: inline-block;
@@ -99,7 +147,6 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 
-/* Rounded sliders */
 .slider.round {
     border-radius: 34px;
 }
@@ -108,15 +155,84 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
-.process-node-band {
-    opacity: 0.3;
+/* Navigation Styles */
+#navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
 }
 
-.process-node-label {
-    font-family: 'Roboto', sans-serif;
-    font-size: 14px;
+#navigation-left {
+    flex: 1;
+    text-align: left;
+}
+
+#navigation-center {
+    flex: 2;
+    text-align: center;
+}
+
+#navigation-right {
+    flex: 1;
+    text-align: right;
+}
+
+button {
+    background-color: #3498db; /* Blue background */
+    color: white; /* White text */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+    border-radius: 5px; /* Rounded corners */
+}
+
+button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+button:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+}
+
+#progress-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Progress indicator styles remain the same */
+#progress-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-step {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #3498db;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
     font-weight: bold;
-    fill: black;
-    text-anchor: middle;
-    dominant-baseline: central;
+    color: #3498db;
+    background-color: white;
+    cursor: pointer;
+}
+
+.progress-step:hover {
+    background-color: #e0e0e0;
+}
+
+.progress-step.active {
+    background-color: #3498db;
+    color: white;
 }

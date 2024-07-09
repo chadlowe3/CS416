@@ -3,44 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Narrative Visualization</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <title>Moore's Law Visualized</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site.css">
 </head>
 <body>
-<h1>CPU Evolution</h1>
-<!-- Place your other elements and content above -->
+<div id="container">
+    <div class="blue-bg" id="header">
+        <h1>Moore's Law</h1>
+        <div id="intro">
+            <p>Moore's Law is the observation that the transistor counts in an integrated circuit double roughly every
+                two years.</p>
+            <p>Moore's law isn't a natural law, but rather a target that the semiconductor industry has used to set
+                goals for the design and manufacturing of integrated circuits. Moore's Law has held remarkably for over
+                50 years.</p>
+        </div>
+    </div>
 
-<!-- Add toggle switch for Moore's Law -->
-<div class="toggle-container">
-    <label class="switch">
-        <input checked id="scaleToggle" type="checkbox">
-        <span class="slider round"></span>
-    </label>
-    <span>Logarithmic Scale</span>
+    <div id="content">
+        <div id="narrative-container">
+            <div class="blue-bg" id="narrative">
+                <div class="narrative-content active" data-step="1">
+                    <h2>CPU Transistor Count Over Time</h2>
+                    <p>Here you see a plot of CPU transistor count over 50 years from 1971 to 2021. Doubling the
+                        transistor
+                        count every 2 years means that the transistor count in CPU's increases exponentially over
+                        time.</p>
+                </div>
+                <div class="narrative-content" data-step="2">
+                    <h2>Visualize Moore's Law</h2>
+                    <p>What would Moore's Law have predicted? When we add Moore's Law to the chart, it can be seen that
+                        transistor count tracked almost perfectly for 5 decades.</p>
+                </div>
+                <div class="narrative-content" data-step="3">
+                    <h2>Manufacturing</h2>
+                    <p>We said that Moore's Law wasn't a natural law, but a goal for the manufacturing industry. In
+                        order to
+                        meet that goal, scientists have systematically reduced the size of the transistors that make up
+                        the
+                        CPU's.</p>
+                </div>
+                <div class="narrative-content" data-step="4">
+                    <h2>Interact</h2>
+                    <p>Feel free to explore the data using the interactive features below.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <div id="chart"></div>
+            <div class="date-slider" id="date_range"></div>
+            <div id="controls">
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input checked id="scaleToggle" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Logarithmic Scale</span>
+                </div>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input checked id="mooresLawToggle" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Show Moore's Law</span>
+                </div>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input checked id="mosfetScaleToggle" type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Show CPU Process Scale</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="blue-bg" id="extra-space"></div>
+
+    </div>
+
+    <div id="navigation">
+        <div id="navigation-left">
+            <button id="back-btn" style="display: none;">Back</button>
+        </div>
+        <div id="navigation-center">
+            <button id="begin-btn">Begin</button>
+            <div id="progress-indicator" style="display: none;">
+                <div class="progress-step" data-step="1">1</div>
+                <div class="progress-step" data-step="2">2</div>
+                <div class="progress-step" data-step="3">3</div>
+                <div class="progress-step" data-step="4">4</div>
+            </div>
+        </div>
+        <div id="navigation-right">
+            <button id="next-btn" style="display: none;">Next</button>
+        </div>
+    </div>
 </div>
 
-<div class="toggle-container">
-    <label class="switch">
-        <input type="checkbox" id="mooresLawToggle" checked>
-        <span class="slider round"></span>
-    </label>
-    <span>Show Moore's Law</span>
-</div>
-
-<div class="toggle-container">
-    <label class="switch">
-        <input type="checkbox" id="mosfetScaleToggle" checked>
-        <span class="slider round"></span>
-    </label>
-    <span>Show CPU Process Scale</span>
-</div>
-
-<div id="chart"></div>
-<div id="date_range" class="date-slider"></div>
-
-
-<!-- D3 and D3 Annotations are loaded at the end -->
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://unpkg.com/d3-svg-annotation"></script>
 <script src="js/main.js"></script>

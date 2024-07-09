@@ -18,10 +18,13 @@ this exponential increase on a logarithmic scale the line is straight, switching
 the exponential increase better.
 
 
+
 Chart 2 - Moore's Law
 
 What would Moores Law have predicted? When we add Moore's Law to the chart, it can be seen that
 transitor count tracked almost perfectly for 5 decades.
+
+
 
 
 Chart 3 - CPU Process Size
@@ -32,4 +35,6 @@ first in micrometers, then nanometers. Smaller transistors mean more transistors
 Here you see how transistor size has decreased over the years, allowing for Moore's Law to maintained.
 
 
-Interactive Chart
+Chart 4 - Interactive Chart
+
+Feel free to explore the data
