@@ -36,14 +36,18 @@ const chart = {
     line: null,
     transistorData: null,
     mosfetScaleData: null,
-    cpuData: null
+    cpuData: null,
+    dateRangeSlider: null
 };
 
 /* Toggle and scene state. */
 const state = {
     /* Narrative Step */
     currentScene: 0,
-    sceneCount: 0
+    sceneCount: 0,
+    /* Animation states (so we can cancel them if needed.) */
+    cancelYearAnimation: null,
+    cancelMooresLawAnimation: null
 };
 
 let startYear = 1971;
@@ -86,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    createDateRangeSlider('#date_range', 1971, 2021, (newStartYear, newEndYear) => {
+    chart.dateRangeSlider = createDateRangeSlider('#date_range', 1971, 2021, (newStartYear, newEndYear) => {
         startYear = newStartYear;
         endYear = newEndYear;
         updateChart();
@@ -135,6 +139,17 @@ function displayScene(scene) {
 
     // If a scene was specified, set the current scene to it.
     if (scene != null) state.currentScene = scene;
+
+    // Cancel any in-progress animations.
+    if (state.cancelYearAnimation) {
+        state.cancelYearAnimation();
+        state.cancelYearAnimation = null;
+    }
+
+    if (state.cancelMooresLawAnimation) {
+        state.cancelMooresLawAnimation();
+        state.cancelMooresLawAnimation = null;
+    }
 
     ui.intro.style.display = state.currentScene === 0 ? 'block' : 'none';
 
@@ -186,30 +201,45 @@ function displayScene(scene) {
             ui.cpuToggle.checked = true;
             ui.mosfetScaleToggle.checked = false;
 
-            // TODO: Animate the end year slider moving min to max over a few seconds.
-            //       Show the CPU annotations during this.
+            // Animate the end year slider moving min to max over a few seconds.
+            state.cancelYearAnimation = animateYearSlider(1971, 2021, 20000);
+
             break;
         case 2:
             /* Scene 2 - Visualizing Moore's Law. */
 
-            // TODO: Hide CPU annotations.
-            //       Fade in the Moore's Law line and annotate it.
+            // Set toggle states.
+            ui.scaleToggle.checked = true;
+            ui.mooresLawToggle.checked = true;
+            ui.cpuToggle.checked = false;
+            ui.mosfetScaleToggle.checked = false;
+
+            // Animate Moore's Law underlay.
+            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 15000);
+
             break;
         case 3:
             /* Scene 3 - Visualizing the process scale that allowed scientists to adhere to Moore's Law. */
 
-            // TODO: Hide CPU and Moore's Law annotations. Show the process scale.
+            // Set toggle states.
+            ui.scaleToggle.checked = true;
+            ui.mooresLawToggle.checked = false;
+            ui.cpuToggle.checked = false;
+            ui.mosfetScaleToggle.checked = true;
 
             break;
         case 4:
             /* Scene 4 - Interactive. */
 
-            // TODO: Hide Moore's Law and process scale annotations, show CPU's
-            // TODO: Enable all user controls for editing.
-            // TODO: Show a note that the user can now play.
+            // Set toggle states.
+            ui.scaleToggle.checked = true;
+            ui.mooresLawToggle.checked = false;
+            ui.cpuToggle.checked = true;
+            ui.mosfetScaleToggle.checked = false;
+
             break;
         default:
-            console
+            console.error(`displayScene(${scene}), invalid scene number.`)
             break;
     }
 
@@ -556,7 +586,73 @@ function createDateRangeSlider(containerSelector, initialStartYear, initialEndYe
         updateRange: function (newStartYear, newEndYear) {
             handlesData[0].value = newStartYear;
             handlesData[1].value = newEndYear;
-            updateHighlightedRange();
+            handle.attr('cx', d => x(d.value));
+            highlightedRange
+                .attr('x', x(newStartYear))
+                .attr('width', x(newEndYear) - x(newStartYear));
+            labels
+                .attr('x', d => x(d.value))
+                .text(d => d.value);
+            onRangeChange(newStartYear, newEndYear);
+        }
+    };
+}
+
+function animateYearSlider(startYear, endYear, duration) {
+    const fps = 30;
+    const frames = duration / 1000 * fps;
+    const yearIncrement = (endYear - startYear) / frames;
+    let currentFrame = 0;
+    let animationFrameId;
+
+    function updateSlider() {
+        if (currentFrame <= frames) {
+            const currentYear = Math.round(startYear + yearIncrement * currentFrame);
+            chart.dateRangeSlider.updateRange(startYear, currentYear);
+            updateChart();
+            currentFrame++;
+            //setTimeout(updateSlider, 1000 / fps);
+            animationFrameId = requestAnimationFrame(updateSlider);
+        }
+    }
+
+    animationFrameId = requestAnimationFrame(updateSlider);
+
+    return function cancelAnimation() {
+        if (animationFrameId) {
+            // Cancel the animation.
+            cancelAnimationFrame(animationFrameId);
+            // Update the slider to the end.
+            currentFrame = frames;
+            updateSlider();
+        }
+    }
+}
+
+function animateMooresLaw(startYear, endYear, duration) {
+    const fps = 30;
+    const frames = duration / 1000 * fps;
+    const yearIncrement = (endYear - startYear) / frames;
+    let currentFrame = 0;
+    let animationFrameId;
+
+    function updateMooresLaw() {
+        if (currentFrame <= frames) {
+            const currentYear = Math.round(startYear + yearIncrement * currentFrame);
+            addMooresLaw(startYear, currentYear);
+            currentFrame++;
+            animationFrameId = requestAnimationFrame(updateMooresLaw);
+        }
+    }
+
+    animationFrameId = requestAnimationFrame(updateMooresLaw);
+
+    // Return a function to cancel the animation
+    return function cancelAnimation() {
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            currentFrame = frames;
+            updateMooresLaw();
         }
     };
 }
@@ -575,12 +671,12 @@ function generateMooresLawData(detailStartYear, detailEndYear, initialTransistor
 function addMooresLaw(detailStartYear, detailEndYear) {
 
     if (!ui.mooresLawToggle.checked) {
-        chart.chartSvg.selectAll(".moores-law-area, .moores-law-line").remove();
+        chart.chartSvg.selectAll(".moores-law-area, .moores-law-line, .moores-law-annotation").remove();
         return;
     }
 
     // Remove existing Moore's Law elements
-    chart.chartSvg.selectAll(".moores-law-area, .moores-law-line, #chart-area").remove();
+    chart.chartSvg.selectAll(".moores-law-area, .moores-law-line, .moores-law-annotation, #chart-area").remove();
 
     const years = chart.transistorData.map(d => d.Year.getFullYear());
     const startYear = Math.min(...years);
@@ -628,6 +724,37 @@ function addMooresLaw(detailStartYear, detailEndYear) {
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "5,5")
         .attr("d", mooresLawLine);
+
+    // Add Moore's Law annotation
+    const annotationDistance = 50; // Distance from the line, adjust as needed
+    const startPoint = mooresLawData[0];
+    const endPoint = mooresLawData[mooresLawData.length - 1];
+
+    // Calculate angle of the line
+    const dx = chart.xScale(endPoint.Year) - chart.xScale(startPoint.Year);
+    const dy = chart.yScale(endPoint.TransistorsPerMicroprocessor) - chart.yScale(startPoint.TransistorsPerMicroprocessor);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    // Calculate midpoint of the line
+    const midX = (chart.xScale(startPoint.Year) + chart.xScale(endPoint.Year)) / 2;
+    const midY = (chart.yScale(startPoint.TransistorsPerMicroprocessor) + chart.yScale(endPoint.TransistorsPerMicroprocessor)) / 2;
+
+    // Calculate offset perpendicular to the line
+    const perpAngle = angle + 90;
+    const offsetX = annotationDistance * Math.cos(perpAngle * Math.PI / 180);
+    const offsetY = annotationDistance * Math.sin(perpAngle * Math.PI / 180);
+
+    chart.chartSvg.append("text")
+        .attr("class", "moores-law-annotation")
+        .attr("x", midX + offsetX)
+        .attr("y", midY - offsetY)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .attr("font-weight", "bold")
+        .attr("font-size", "14px")
+        .attr("fill", "grey")
+        .attr("transform", `rotate(${angle}, ${midX + offsetX}, ${midY - offsetY})`)
+        .text("Moore's Law");
 }
 
 function addMosfetScaleBands(detailStartYear, detailEndYear) {

@@ -163,8 +163,23 @@ body, html {
     cursor: default;
 }
 
+.moores-law-annotation {
+    font-size: 16px;
+    fill: black;
+}
+
 .process-node-band {
     opacity: 0.3;
+    animation: bandFadeIn 2s;
+}
+
+@keyframes bandFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.3;
+    }
 }
 
 .process-node-label {
@@ -174,6 +189,17 @@ body, html {
     fill: black;
     text-anchor: middle;
     dominant-baseline: central;
+    opacity: 1;
+    animation: labelFadeIn 2s;
+}
+
+@keyframes labelFadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* Controls Styles */
