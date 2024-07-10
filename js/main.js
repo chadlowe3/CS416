@@ -239,7 +239,7 @@ function displayScene(scene) {
             ui.mosfetScaleToggle.checked = false;
 
             // Animate Moore's Law underlay.
-            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 15000);
+            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 3000);
 
             break;
         case 3:
