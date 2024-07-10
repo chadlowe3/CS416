@@ -2,6 +2,7 @@ const CONFIG = {
     AXIS_TRANSITION_TIME: 100
 };
 
+/* All of the UI elements (except for the chart elements.)  */
 const ui = (() => {
     return {
         /* Navigation Elements */
@@ -20,29 +21,29 @@ const ui = (() => {
         scaleToggle: document.getElementById('scaleToggle'),
         mooresLawToggle: document.getElementById('mooresLawToggle'),
         mosfetScaleToggle: document.getElementById('mosfetScaleToggle'),
+        cpuToggle: document.getElementById('cpuToggle'),
         /* Citations */
         citationsIcon: document.getElementById('citations-icon'),
         citationsPopup: document.getElementById('citations-popup')
     };
 })();
 
+/* Chart elements. */
 const chart = {
     chartSvg: null,
     xScale: null,
     yScale: null,
     line: null,
     transistorData: null,
-    mosfetScaleData: null
+    mosfetScaleData: null,
+    cpuData: null
 };
 
+/* Toggle and scene state. */
 const state = {
-    /* Toggles */
-    isMooresLawVisible: false,
-    isMosfetScaleVisible: false,
-    isLogScale: true,
     /* Narrative Step */
-    currentStep: 0,
-    totalSteps: 0
+    currentScene: 0,
+    sceneCount: 0
 };
 
 let startYear = 1971;
@@ -56,195 +57,191 @@ const margin = {top: 20, right: 20, bottom: 50, left: 60},
 document.addEventListener('DOMContentLoaded', async () => {
 
     // Set the initial UI state.
-    initializeUI();
+    displayScene(0);
 
     // Initialize the chart (including loading the data asynchronously.)
     await initializeChart();
 
     updateChart();
 
-    state.currentStep = 0;
-    state.totalSteps = ui.narrativeContents.length;
+    state.currentScene = 0;
+    state.sceneCount = ui.narrativeContents.length;
 
     ui.beginBtn.addEventListener('click', function () {
-        ui.header.classList.add('minimized');
-        ui.content.classList.add('visible');
-        ui.beginBtn.style.display = 'none';
-        state.currentStep = 1;
-        updateButtons();
-        updateProgress();
-        updateNarrative();
+        displayScene(Math.min(state.sceneCount, state.currentScene + 1));
     });
 
     ui.backBtn.addEventListener('click', function () {
-        if (state.currentStep > 1) {
-            state.currentStep--;
-            updateButtons();
-            updateProgress();
-            updateNarrative();
-        } else if (state.currentStep > 0) {
-            initializeUI();
-            updateButtons();
-            updateProgress();
-            updateNarrative();
-        }
+        displayScene(Math.max(0, state.currentScene - 1));
     });
 
     ui.nextBtn.addEventListener('click', function () {
-        if (state.currentStep < state.totalSteps) {
-            state.currentStep++;
-            updateButtons();
-            updateProgress();
-            updateNarrative();
-        }
+        displayScene(Math.min(state.sceneCount, state.currentScene + 1));
     });
 
     ui.progressSteps.forEach(step => {
         step.addEventListener('click', function () {
             const stepNumber = parseInt(this.getAttribute('data-step'));
-            goToStep(stepNumber);
+            displayScene(stepNumber);
         });
     });
 
+    createDateRangeSlider('#date_range', 1971, 2021, (newStartYear, newEndYear) => {
+        startYear = newStartYear;
+        endYear = newEndYear;
+        updateChart();
+    });
+
     if (ui.scaleToggle) {
-        ui.scaleToggle.addEventListener('change', (event) => {
-            state.isLogScale = event.target.checked;
-            updateChart(startYear, endYear);
+        ui.scaleToggle.addEventListener('change', () => {
+            updateChart();
         });
     } else {
         console.error("Scale toggle element not found");
     }
 
-    createDateRangeSlider('#date_range', 1971, 2021, (newStartYear, newEndYear) => {
-        startYear = newStartYear;
-        endYear = newEndYear;
-        updateChart(newStartYear, newEndYear);
-    });
-
     if (ui.mooresLawToggle) {
-        ui.mooresLawToggle.addEventListener('change', (event) => {
-            state.isMooresLawVisible = event.target.checked;
-            updateChart(startYear, endYear);
+        ui.mooresLawToggle.addEventListener('change', () => {
+            updateChart();
+        });
+    } else {
+        console.error("Moore's Law toggle element not found");
+    }
+
+    if (ui.cpuToggle) {
+        ui.cpuToggle.addEventListener('change', () => {
+            updateChart();
         });
     } else {
         console.error("Moore's Law toggle element not found");
     }
 
     if (ui.mosfetScaleToggle) {
-        ui.mosfetScaleToggle.addEventListener('change', (event) => {
-            state.isMosfetScaleVisible = event.target.checked;
-            updateChart(startYear, endYear);
+        ui.mosfetScaleToggle.addEventListener('change', () => {
+            updateChart();
         });
     } else {
         console.error("Mosfet scale toggle element not found");
     }
 });
 
+/* Toggles the citations popup. */
 function toggleCitations() {
     ui.citationsPopup.classList.toggle('hidden');
 }
 
-function initializeUI() {
+/* Updates the UI to represent the specified scene. */
+function displayScene(scene) {
 
-    // Show only the Begin-button initially
-    ui.beginBtn.style.display = 'inline-block';
-    ui.backBtn.style.display = 'none';
-    ui.nextBtn.style.display = 'none';
-    ui.progressIndicator.style.display = 'none';
+    // If a scene was specified, set the current scene to it.
+    if (scene != null) state.currentScene = scene;
 
-    ui.mooresLawToggle.checked = false;
-    ui.scaleToggle.checked = true;
-    ui.mosfetScaleToggle.checked = false;
+    ui.intro.style.display = state.currentScene === 0 ? 'block' : 'none';
 
-    // Set initial step
-    state.currentStep = 0;
-
-    ui.header.classList.remove('minimized');
-    ui.content.classList.remove('visible');
-
-    ui.citationsIcon.bottom = '60px';
-}
-
-function goToStep(step) {
-    if (step >= 1 && step <= state.totalSteps) {
-        state.currentStep = step;
-        updateButtons();
-        updateProgress();
-        updateNarrative();
-    }
-}
-
-function updateButtons() {
-
-    ui.intro.style.display = state.currentStep === 0 ? 'block' : 'none';
-    ui.beginBtn.style.display = state.currentStep === 0 ? 'inline-block' : 'none';
-    ui.backBtn.style.display = state.currentStep > 0 ? 'inline-block' : 'none';
-    ui.progressIndicator.style.display = state.currentStep > 0 ? 'flex' : 'none';
-
-    console.log(`Current Step: ${state.currentStep}, Total Steps: ${state.totalSteps}`);
-
-    if (state.currentStep === 0) {
+    // Update the navigation buttons.
+    ui.beginBtn.style.display = state.currentScene === 0 ? 'inline-block' : 'none';
+    ui.backBtn.style.display = state.currentScene > 0 ? 'inline-block' : 'none';
+    if (state.currentScene === 0) {
         ui.nextBtn.style.display = 'none';
-    } else if (state.currentStep < state.totalSteps) {
+    } else if (state.currentScene < state.sceneCount) {
         ui.nextBtn.style.display = 'inline-block';
         ui.nextBtn.disabled = false;
     } else {
         ui.nextBtn.disabled = true;
     }
+    ui.progressIndicator.style.display = state.currentScene > 0 ? 'flex' : 'none';
 
-    ui.citationsIcon.style.bottom = state.currentStep === 0 ? '20px' : '85px';
-    ui.citationsPopup.style.bottom = state.currentStep === 0 ? '80px' : '145px';
-}
+    // Update the citation UI positions.
+    ui.citationsIcon.style.bottom = state.currentScene === 0 ? '20px' : '85px';
+    ui.citationsPopup.style.bottom = state.currentScene === 0 ? '80px' : '145px';
 
-function updateNarrative() {
+    // Scene-specific set up.
+    switch (state.currentScene) {
+        case 0:
+            /* The welcome scene. */
 
-    ui.narrativeContents.forEach(content => {
-        content.classList.remove('active');
-    });
+            // Set toggle states.
+            ui.scaleToggle.checked = true;
+            ui.mooresLawToggle.checked = false;
+            ui.cpuToggle.checked = true;
+            ui.mosfetScaleToggle.checked = false;
 
-    const activeContent = document.querySelector(`.narrative-content[data-step="${state.currentStep}"]`);
+            // Display the header, hide the main content.
+            ui.header.classList.remove('minimized');
+            ui.content.classList.remove('visible');
 
-    if (activeContent) {
-        activeContent.classList.add('active');
-    }
-
-    // Update chart based on current step
-    updateChart(state.currentStep);
-}
-
-function updateProgress() {
-    ui.progressSteps.forEach((step, index) => {
-        if (index + 1 === state.currentStep) {
-            step.classList.add('active');
-        } else {
-            step.classList.remove('active');
-        }
-    });
-}
-
-function updateChart(step) {
-    // Implement chart updates based on the current step
-    // This will depend on your D3.js implementation
-    switch (step) {
+            // Position the citations button near the window bottom.
+            ui.citationsIcon.bottom = '60px';
+            break;
         case 1:
-            // Show initial chart
+            /* Scene 1 - Overview of transistor count over time graph. */
+
+            // Display the header, hide the main content.
+            ui.header.classList.add('minimized');
+            ui.content.classList.add('visible');
+
+            // Set toggle states.
+            ui.scaleToggle.checked = true;
+            ui.mooresLawToggle.checked = false;
+            ui.cpuToggle.checked = true;
+            ui.mosfetScaleToggle.checked = false;
+
+            // TODO: Animate the end year slider moving min to max over a few seconds.
+            //       Show the CPU annotations during this.
             break;
         case 2:
-            // Add Moore's Law line
+            /* Scene 2 - Visualizing Moore's Law. */
+
+            // TODO: Hide CPU annotations.
+            //       Fade in the Moore's Law line and annotate it.
             break;
         case 3:
-            // Show manufacturing data
+            /* Scene 3 - Visualizing the process scale that allowed scientists to adhere to Moore's Law. */
+
+            // TODO: Hide CPU and Moore's Law annotations. Show the process scale.
+
             break;
         case 4:
-            // Enable all interactive features
+            /* Scene 4 - Interactive. */
+
+            // TODO: Hide Moore's Law and process scale annotations, show CPU's
+            // TODO: Enable all user controls for editing.
+            // TODO: Show a note that the user can now play.
             break;
+        default:
+            console
+            break;
+    }
+
+    if (state.currentScene >= 1 && state.currentScene <= state.sceneCount) {
+
+        // Update the progress buttons.
+        ui.progressSteps.forEach((step, index) => {
+            if (index + 1 === state.currentScene) {
+                step.classList.add('active');
+            } else {
+                step.classList.remove('active');
+            }
+        });
+
+        // Update the narrative.
+        ui.narrativeContents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        const activeContent = document.querySelector(`.narrative-content[data-step="${state.currentScene}"]`);
+
+        if (activeContent) {
+            activeContent.classList.add('active');
+        }
+
+        // Update the chart.
+        updateChart();
     }
 }
 
+/* One-time initialization of the chart. (Includes loading the data asynchronously.) */
 async function initializeChart() {
-
-    // Set the dimensions and margins of the graph
-
 
     // Append the svg object to the #chart element.
     chart.chartSvg = d3.select("#chart").append("svg")
@@ -256,12 +253,23 @@ async function initializeChart() {
     // Load the data
     chart.transistorData = await d3.csv("data/transistors-per-microprocessor.csv");
     chart.mosfetScaleData = await d3.csv("data/mosfet-scaling.csv");
+    chart.cpuData = await d3.csv("data/cpus-cleaned.csv");
 
-    // Parse the date and ensure proper scaling
+    // Pre-process the transistor data (parse date, etc.)
     chart.transistorData.forEach(d => {
         d.Year = d3.timeParse("%Y")(d.Year);
         d.TransistorsPerMicroprocessor = +d["Transistors per microprocessor"];
     });
+
+    // Pre-process the CPU data (parse date, etc.)
+    chart.cpuData.forEach((d, index) => {
+        const parsedYear = d3.timeParse("%Y")(d.Year);
+        d.Year = parsedYear;
+        d.Process = parseFloat(d.Process.replace(/,/g, ''));
+        d.TransistorCount = parseFloat(d.TransistorCount.replace(/,/g, ''));
+        d.Show = d.Show === "1";
+    });
+
 
     // Set up scales
     chart.xScale = d3.scaleTime().range([0, width]);
@@ -278,8 +286,24 @@ async function initializeChart() {
         .attr("class", "x-axis")
         .attr("transform", `translate(0,${height})`);
 
+    chart.chartSvg.append("text")
+        .attr("class", "x-axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .text("Year");
+
     chart.chartSvg.append("g")
         .attr("class", "y-axis");
+
+    chart.chartSvg.append("text")
+        .attr("class", "y-axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Transistor Count (Log Scale)");
 
     // Add grid lines
     chart.chartSvg.append("g")
@@ -297,7 +321,7 @@ async function initializeChart() {
         .attr("stroke-width", 1.5);
 }
 
-function updateChart(startYear = null, endYear = null) {
+function updateChart() {
 
     if (!chart.transistorData || chart.transistorData.length === 0) {
         // Shouldn't happen if we handled the concurrency properly.
@@ -324,7 +348,7 @@ function updateChart(startYear = null, endYear = null) {
     // X scale fits the data exactly.
     chart.xScale.domain(d3.extent(filteredData, d => d.Year));
 
-    if (state.isLogScale) {
+    if (ui.scaleToggle.checked) {
         chart.yScale = d3.scaleLog()
             .base(10)
             .domain([Math.pow(10, Math.floor(Math.log10(minTransistors))),
@@ -340,6 +364,9 @@ function updateChart(startYear = null, endYear = null) {
     chart.chartSvg.select(".x-axis")
         .transition().duration(CONFIG.AXIS_TRANSITION_TIME)
         .call(d3.axisBottom(chart.xScale).ticks(10));
+
+    chart.chartSvg.select(".y-axis-label")
+        .text(ui.scaleToggle.checked ? "Transistor Count (Log Scale)" : "Transistor Count");
 
     chart.chartSvg.select(".y-axis")
         .transition().duration(CONFIG.AXIS_TRANSITION_TIME)
@@ -377,6 +404,59 @@ function updateChart(startYear = null, endYear = null) {
 
     // Add Mosfet scale visualization
     addMosfetScaleBands(startYear, endYear);
+
+    // Add CPU annotations
+    addCPUAnnotations();
+}
+
+function addCPUAnnotations() {
+
+    // Remove existing annotations
+    chart.chartSvg.selectAll(".cpu-annotation").remove();
+
+    if (!chart.cpuData || !ui.cpuToggle.checked) return;
+
+    const filteredCPUData = chart.cpuData.filter(d =>
+        d.Year instanceof Date &&
+        !isNaN(d.Year.getTime()) &&
+        d.Year >= new Date(startYear, 0, 1) &&
+        d.Year <= new Date(endYear, 11, 31) &&
+        !isNaN(d.TransistorCount) &&
+        d.Show
+    );
+
+    const annotations = chart.chartSvg.selectAll(".cpu-annotation")
+        .data(filteredCPUData)
+        .enter().append("g")
+        .attr("class", "cpu-annotation")
+        .attr("transform", d => {
+            const x = chart.xScale(d.Year);
+            const y = chart.yScale(d.TransistorCount);
+            if (isNaN(x) || isNaN(y)) {
+                console.warn("Invalid data point:", d);
+                return "translate(0,0)";
+            }
+            return `translate(${x},${y})`;
+        });
+
+    console.log("Number of annotations created:", annotations.size());
+
+    // Add a line connecting to the main chart line
+    annotations.append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", 0)
+        .attr("y2", -30)
+        .attr("stroke", "black")
+        .attr("stroke-dasharray", "2,2");
+
+    // Add the CPU name
+    annotations.append("text")
+        .attr("x", 0)
+        .attr("y", -35)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "10px")
+        .text(d => d.Processor);
 }
 
 function createDateRangeSlider(containerSelector, initialStartYear, initialEndYear, onRangeChange) {
@@ -494,7 +574,7 @@ function generateMooresLawData(detailStartYear, detailEndYear, initialTransistor
 
 function addMooresLaw(detailStartYear, detailEndYear) {
 
-    if (!state.isMooresLawVisible) {
+    if (!ui.mooresLawToggle.checked) {
         chart.chartSvg.selectAll(".moores-law-area, .moores-law-line").remove();
         return;
     }
@@ -560,7 +640,7 @@ function addMosfetScaleBands(detailStartYear, detailEndYear) {
     // Remove existing bands and labels
     chart.chartSvg.selectAll(".process-node-band, .process-node-label").remove();
 
-    if (!state.isMosfetScaleVisible) {
+    if (!ui.mosfetScaleToggle.checked) {
         return;
     }
 

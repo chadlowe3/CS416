@@ -1,4 +1,4 @@
-Processor,Designer,Transistor Count,Year,Process,Show
+Processor,Designer,TransistorCount,Year,Process,Show
 "Intel 4004 (4-bit, 16-pin)",Intel,2250,1971,10000,
 "Intel 8008 (8-bit, 18-pin)",Intel,3500,1972,10000,
 "NEC μCOM-4 (4-bit, 42-pin)",NEC,2500,1973,7500,
@@ -66,9 +66,6 @@ Alpha 21264 EV6 (64-bit),DEC,15200000,1998,350,
 "Hitachi SH-4 (32-bit, caches)[62]",Hitachi,3200000,1998,250,
 "ARM 9TDMI (32-bit, no cache)",Acorn,111000,1999,350,
 "Pentium III Katmai (32-bit, 128-bit SIMD, caches)",Intel,9500000,1999,250,
-"Emotion Engine (64-bit, 128-bit SIMD, cache)","Sony, Toshiba","10500000
-
-– 13500000",1999,250,
 "Pentium II Mobile Dixon (32-bit, caches)",Intel,27400000,1999,180,
 "AMD K6-III (32-bit, caches)",AMD,21300000,1999,250,
 "AMD K7 (32-bit, caches)",AMD,22000000,1999,250,
@@ -122,9 +119,7 @@ Six-core Core i7 (Gulftown),Intel,1170000000,2010,32,
 "Xeon Nehalem-EX (8-core 64-bit, SIMD, large caches)",Intel,2300000000,2010,45,
 "SPARC64 IXfx (64-bit, SIMD, large caches)",Fujitsu,1870000000,2011,40,
 "Quad-core + GPU Core i7 (64-bit, SIMD, large caches)",Intel,1160000000,2011,32,
-"Six-core Core i7/8-core Xeon E5
-
- (Sandy Bridge-E/EP) (64-bit, SIMD, large caches)",Intel,2270000000,2011,32,
+"Six-core Core i7/8-core Xeon E5 (Sandy Bridge-E/EP) (64-bit, SIMD, large caches)",Intel,2270000000,2011,32,
 "Xeon Westmere-EX (10-core 64-bit, SIMD, large caches)",Intel,2600000000,2011,32,
 "Atom ""Medfield"" (64-bit)",Intel,432000000,2012,32,
 "SPARC64 X (64-bit, SIMD, caches)",Fujitsu,2990000000,2012,28,
@@ -227,9 +222,6 @@ HiSilicon Kirin 9000s,Huawei,9510000000,2023,7,
 "Apple M3 Pro (dodeca-core 64-bit ARM64 SoC, SIMD, caches)",Apple,37000000000,2023,3,
 "Apple M3 Max (hexadeca-core 64-bit ARM64 SoC, SIMD, caches)",Apple,92000000000,2023,3,
 Apple A17,Apple,1.9E10,2023,3,
-Sapphire Rapids quad-chip module (up to 60 cores and 112.5 MB of cache)[189],Intel,"44000000000–
-
-48000000000",2023,10,
 "Apple M2 Pro (12-core 64-bit ARM64 SoC, SIMD, caches)",Apple,40000000000,2023,5,
 "Apple M2 Max (12-core 64-bit ARM64 SoC, SIMD, caches)",Apple,67000000000,2023,5,
 Apple M2 Ultra (two M2 Max dies),Apple,134000000000,2023,5,

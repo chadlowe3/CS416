@@ -110,6 +110,21 @@ body, html {
     stroke-width: 0;
 }
 
+.axis-label {
+    font-size: 14px;
+    fill: #333;
+}
+
+.y-axis-label {
+    font-size: 14px;
+    fill: #333;
+}
+
+.x-axis-label {
+    font-size: 14px;
+    fill: #333;
+}
+
 .date-slider {
     width: 80%;
     margin-bottom: 20px;
