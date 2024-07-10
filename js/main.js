@@ -151,6 +151,30 @@ function displayScene(scene) {
         state.cancelMooresLawAnimation = null;
     }
 
+    // Reset date range slider.
+    if (chart.dateRangeSlider) {
+        chart.dateRangeSlider.updateRange(1971, 2021);
+    }
+
+    // Enable/disable inputs.
+    let inputEnabled = state.currentScene === state.sceneCount;
+
+    const toggleContainers = document.querySelectorAll('.toggle-container');
+    toggleContainers.forEach(container => {
+        if (inputEnabled) {
+            container.classList.remove('disabled');
+        } else {
+            container.classList.add('disabled');
+        }
+
+        const checkbox = container.querySelector('input[type="checkbox"]');
+        checkbox.disabled = !inputEnabled;
+    });
+
+    d3.select('#date_range')
+        .style('pointer-events', inputEnabled ? 'all' : 'none')
+        .style('opacity', inputEnabled ? 1 : 0.5);
+
     ui.intro.style.display = state.currentScene === 0 ? 'block' : 'none';
 
     // Update the navigation buttons.
@@ -469,8 +493,6 @@ function addCPUAnnotations() {
             return `translate(${x},${y})`;
         });
 
-    console.log("Number of annotations created:", annotations.size());
-
     // Add a line connecting to the main chart line
     annotations.append("line")
         .attr("x1", 0)
@@ -683,10 +705,7 @@ function addMooresLaw(detailStartYear, detailEndYear) {
     const endYear = Math.max(...years);
     const initialTransistors = chart.transistorData[0].TransistorsPerMicroprocessor;
 
-    console.log("Data range:", {startYear, endYear, initialTransistors});
-
     const mooresLawData = generateMooresLawData(startYear, endYear, initialTransistors);
-    console.log("Moore's Law data points:", mooresLawData.length);
 
     // Create a clipping path
     chart.chartSvg.append("clipPath")

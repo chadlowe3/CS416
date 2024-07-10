@@ -216,6 +216,15 @@ body, html {
     font-family: 'Roboto', sans-serif;
 }
 
+.toggle-container.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.toggle-container.disabled input[type="checkbox"] {
+    pointer-events: none;
+}
+
 /* Switch Styles */
 .switch {
     position: relative;
@@ -230,6 +239,7 @@ body, html {
     width: 0;
     height: 0;
 }
+
 
 .slider {
     position: absolute;
