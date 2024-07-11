@@ -464,7 +464,6 @@ function updateChart() {
 }
 
 function addCPUAnnotations() {
-
     // Remove existing annotations
     chart.chartSvg.selectAll(".cpu-annotation").remove();
 
@@ -493,6 +492,57 @@ function addCPUAnnotations() {
             return `translate(${x},${y})`;
         });
 
+    const tooltip = d3.select("#cpu-tooltip");
+
+    annotations.on("mouseover", function (event, d) {
+        const [x, y] = d3.pointer(event, chart.chartSvg.node());
+        const process = d.Process >= 1000 ? `${d.Process / 1000} μm` : `${d.Process} nm`;
+
+        tooltip.style("display", "block")
+            .style("left", (x + 5) + "px")
+            .style("top", (y - 5) + "px")
+            .html(`<strong>${d.Processor}</strong><br>
+                      Designer: ${d.Designer}<br>
+                      Transistor Count: ${d.TransistorCount.toLocaleString()}<br>
+                      Year: ${d.Year.getFullYear()}<br>
+                      Process: ${process}`);
+
+        // Highlight the annotation
+        d3.select(this).select("circle").attr("r", 5);
+        d3.select(this).select("line").attr("stroke-width", 2);
+        d3.select(this).select("text").attr("font-weight", "bold");
+
+        // Add lines to axes
+        chart.chartSvg.append("line")
+            .attr("class", "cpu-annotation-axis-line")
+            .attr("x1", chart.xScale(d.Year))
+            .attr("y1", chart.yScale(d.TransistorCount))
+            .attr("x2", chart.xScale(d.Year))
+            .attr("y2", height)
+            .attr("stroke", "gray")
+            .attr("stroke-dasharray", "2,2");
+
+        chart.chartSvg.append("line")
+            .attr("class", "cpu-annotation-axis-line")
+            .attr("x1", chart.xScale(d.Year))
+            .attr("y1", chart.yScale(d.TransistorCount))
+            .attr("x2", 0)
+            .attr("y2", chart.yScale(d.TransistorCount))
+            .attr("stroke", "gray")
+            .attr("stroke-dasharray", "2,2");
+    })
+        .on("mouseout", function () {
+            tooltip.style("display", "none");
+
+            // Remove highlight
+            d3.select(this).select("circle").attr("r", 3);
+            d3.select(this).select("line").attr("stroke-width", 1);
+            d3.select(this).select("text").attr("font-weight", "normal");
+
+            // Remove axis lines
+            chart.chartSvg.selectAll(".cpu-annotation-axis-line").remove();
+        });
+
     // Add a line connecting to the main chart line
     annotations.append("line")
         .attr("x1", 0)
@@ -501,6 +551,13 @@ function addCPUAnnotations() {
         .attr("y2", -30)
         .attr("stroke", "black")
         .attr("stroke-dasharray", "2,2");
+
+    // Add a dot on the main chart line
+    annotations.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", 3)
+        .attr("fill", "steelblue");
 
     // Add the CPU name
     annotations.append("text")
