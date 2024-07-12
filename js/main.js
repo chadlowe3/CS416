@@ -2,7 +2,7 @@ const CONFIG = {
     AXIS_TRANSITION_TIME: 75
 };
 
-/* All of the UI elements (except for the chart elements.)  */
+/* All the UI elements (except for the chart elements.)  */
 const ui = (() => {
     return {
         /* Navigation Elements */
@@ -47,7 +47,8 @@ const state = {
     sceneCount: 0,
     /* Animation states (so we can cancel them if needed.) */
     cancelYearAnimation: null,
-    cancelMooresLawAnimation: null
+    cancelMooresLawAnimation: null,
+    isAnimatingYears: false
 };
 
 let startYear = 1971;
@@ -258,7 +259,7 @@ function displayScene(scene) {
             // Set toggle states.
             ui.scaleToggle.checked = true;
             ui.mooresLawToggle.checked = false;
-            ui.cpuToggle.checked = true;
+            ui.cpuToggle.checked = false;
             ui.mosfetScaleToggle.checked = false;
 
             break;
@@ -467,7 +468,7 @@ function addCPUAnnotations() {
     // Remove existing annotations
     chart.chartSvg.selectAll(".cpu-annotation").remove();
 
-    if (!chart.cpuData || !ui.cpuToggle.checked) return;
+    if (!chart.cpuData || !ui.cpuToggle.checked || state.isAnimatingYears) return;
 
     const filteredCPUData = chart.cpuData.filter(d =>
         d.Year instanceof Date &&
@@ -482,6 +483,7 @@ function addCPUAnnotations() {
         .data(filteredCPUData)
         .enter().append("g")
         .attr("class", "cpu-annotation")
+        .attr("opacity", 0)
         .attr("transform", d => {
             const x = chart.xScale(d.Year);
             const y = chart.yScale(d.TransistorCount);
@@ -566,6 +568,10 @@ function addCPUAnnotations() {
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .text(d => d.Processor);
+
+    annotations.transition()
+        .duration(1000)  // 1 second fade-in
+        .attr("opacity", 1);  // Fade to full opacity
 }
 
 function createDateRangeSlider(containerSelector, initialStartYear, initialEndYear, onRangeChange) {
@@ -686,12 +692,17 @@ function animateYearSlider(startYear, endYear, duration) {
 
     function updateSlider() {
         if (currentFrame <= frames) {
+            state.isAnimatingYears = true;
+
             const currentYear = Math.round(startYear + yearIncrement * currentFrame);
             chart.dateRangeSlider.updateRange(startYear, currentYear);
             updateChart();
             currentFrame++;
             //setTimeout(updateSlider, 1000 / fps);
             animationFrameId = requestAnimationFrame(updateSlider);
+        } else {
+            state.isAnimatingYears = false;
+            updateChart();
         }
     }
 
@@ -704,6 +715,7 @@ function animateYearSlider(startYear, endYear, duration) {
             // Update the slider to the end.
             currentFrame = frames;
             updateSlider();
+            state.isAnimatingYears = false;
         }
     }
 }
