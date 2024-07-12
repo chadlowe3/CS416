@@ -574,10 +574,10 @@ function createDateRangeSlider(containerSelector, initialStartYear, initialEndYe
     endYear = initialEndYear;
 
     const svg = d3.select(containerSelector).append('svg')
-        .attr('width', 500)
+        .attr('width', 900)
         .attr('height', 100);
 
-    const margin = {top: 20, right: 30, bottom: 20, left: 30},
+    const margin = {top: 20, right: 30, bottom: 0, left: 30},
         width = +svg.attr('width') - margin.left - margin.right,
         height = +svg.attr('height') - margin.top - margin.bottom;
 
