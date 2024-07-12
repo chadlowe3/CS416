@@ -1,6 +1,5 @@
 /* General Styles */
 body, html {
-    background-color: #3498db;
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
@@ -13,19 +12,15 @@ body, html {
 #container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-}
-
-.blue-bg {
-    background-color: #3498db;
-    color: white;
+    min-height: 50vh;
 }
 
 /* Header Styles */
 #header {
     text-align: center;
-    padding: 2rem;
+    padding: 1rem;
     transition: all 0.5s ease;
+    background-color: #f8f9fa;
 }
 
 #header.minimized {
@@ -34,12 +29,12 @@ body, html {
 }
 
 #header h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin-bottom: 1rem;
 }
 
-#header p {
-    font-size: 1.2rem;
+#intro {
+    font-size: 1.1rem;
     max-width: 800px;
     margin: 1rem auto;
 }
@@ -50,7 +45,7 @@ body, html {
     transition: opacity 0.5s ease;
     opacity: 0;
     display: none;
-    max-width: 1600px; /* Adjust this value as needed */
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -59,21 +54,14 @@ body, html {
     opacity: 1;
 }
 
-#narrative {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-}
-
 #narrative-container {
-    width: 350px;
+    width: 300px;
     flex-shrink: 0;
-    overflow-y: auto;
 }
 
-#extra-space {
-    width: 350px;
-    flex-shrink: 0;
+#narrative {
+    padding: 1rem;
+    background-color: #f8f9fa;
 }
 
 .narrative-content {
@@ -86,7 +74,7 @@ body, html {
 
 #chart-container {
     flex-grow: 1;
-    padding: 2rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     background-color: white;
@@ -96,7 +84,7 @@ body, html {
 /* Chart Styles */
 #chart {
     width: 100%;
-    height: 500px;
+    height: 450px;
     margin-bottom: 20px;
 }
 
@@ -170,7 +158,7 @@ body, html {
 
 .process-node-band {
     opacity: 0.3;
-    animation: bandFadeIn 2s;
+    animation: bandFadeIn 1s;
 }
 
 @keyframes bandFadeIn {
@@ -227,7 +215,7 @@ body, html {
 .toggle-container {
     display: flex;
     align-items: center;
-    margin: 20px 0;
+    margin: 10px 0;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -244,8 +232,8 @@ body, html {
 .switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 50px;
+    height: 28px;
     margin-right: 10px;
 }
 
@@ -265,17 +253,19 @@ body, html {
     bottom: 0;
     background-color: #ccc;
     transition: .4s;
+    border-radius: 28px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 20px;
+    width: 20px;
     left: 4px;
     bottom: 4px;
     background-color: white;
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
@@ -283,57 +273,35 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
-}
-
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
+    transform: translateX(22px);
 }
 
 /* Navigation Styles */
-
 #navigation {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     background-color: #f8f9fa;
     box-sizing: border-box;
     width: 100%;
 }
 
-#navigation-left {
-    flex: 1;
-    text-align: left;
-}
-
-#navigation-center {
-    flex: 2;
-    text-align: center;
-}
-
-#navigation-right {
-    flex: 1;
-    text-align: right;
-}
-
 button {
-    background-color: #3498db; /* Blue background */
-    color: white; /* White text */
+    background-color: #3498db;
+    color: white;
     border: none;
     padding: 10px 20px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s;
+    border-radius: 5px;
 }
 
 button:hover {
-    background-color: #2980b9; /* Darker blue on hover */
+    background-color: #2980b9;
 }
 
 button:disabled {
@@ -348,16 +316,9 @@ button:disabled {
     align-items: center;
 }
 
-/* Progress indicator styles remain the same */
-#progress-indicator {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .progress-step {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     border: 2px solid #3498db;
     border-radius: 50%;
     display: flex;
@@ -379,6 +340,7 @@ button:disabled {
     color: white;
 }
 
+/* Citations Styles */
 #citations-icon {
     position: fixed;
     bottom: 20px;

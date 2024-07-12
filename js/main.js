@@ -226,7 +226,7 @@ function displayScene(scene) {
             ui.mosfetScaleToggle.checked = false;
 
             // Animate the end year slider moving min to max over a few seconds.
-            state.cancelYearAnimation = animateYearSlider(1971, 2021, 10000);
+            state.cancelYearAnimation = animateYearSlider(1971, 2021, 5000);
 
             break;
         case 2:
@@ -239,7 +239,7 @@ function displayScene(scene) {
             ui.mosfetScaleToggle.checked = false;
 
             // Animate Moore's Law underlay.
-            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 3000);
+            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 1000);
 
             break;
         case 3:
