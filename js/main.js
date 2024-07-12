@@ -251,7 +251,7 @@ function displayScene(scene) {
             ui.mosfetScaleToggle.checked = false;
 
             // Animate Moore's Law underlay.
-            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 1000);
+            state.cancelMooresLawAnimation = animateMooresLaw(1971, 2021, 2000);
 
             break;
         case 3:
@@ -513,42 +513,51 @@ function addCPUAnnotations() {
     const tooltip = d3.select("#cpu-tooltip");
 
     annotations.on("mouseover", function (event, d) {
-        const [x, y] = d3.pointer(event, chart.chartSvg.node());
+            const svgNode = chart.chartSvg.node();
+            const svgRect = svgNode.getBoundingClientRect();
+            const xPos = chart.xScale(d.Year) + margin.left;
+            const yPos = chart.yScale(d.TransistorCount) + margin.top;
+
+            // Translate SVG coordinates to screen coordinates
+            const screenX = svgRect.left + xPos;
+            const screenY = svgRect.top + yPos;
+
         const process = d.Process >= 1000 ? `${d.Process / 1000} μm` : `${d.Process} nm`;
 
         tooltip.style("display", "block")
-            .style("left", (x + 5) + "px")
-            .style("top", (y - 5) + "px")
+            .style("left", (screenX + 10) + "px")  // Add a small offset to avoid covering the point
+            .style("top", (screenY - 10) + "px")
             .html(`<strong>${d.Processor}</strong><br>
-                      Designer: ${d.Designer}<br>
-                      Transistor Count: ${d.TransistorCount.toLocaleString()}<br>
-                      Year: ${d.Year.getFullYear()}<br>
-                      Process: ${process}`);
+                  Designer: ${d.Designer}<br>
+                  Transistor Count: ${d.TransistorCount.toLocaleString()}<br>
+                  Year: ${d.Year.getFullYear()}<br>
+                  Process: ${process}`);
 
-        // Highlight the annotation
-        d3.select(this).select("circle").attr("r", 5);
-        d3.select(this).select("line").attr("stroke-width", 2);
-        d3.select(this).select("text").attr("font-weight", "bold");
+            // Highlight the annotation
+            d3.select(this).select("circle").attr("r", 5);
+            d3.select(this).select("line").attr("stroke-width", 2);
+            d3.select(this).select("text").attr("font-weight", "bold");
 
-        // Add lines to axes
-        chart.chartSvg.append("line")
-            .attr("class", "cpu-annotation-axis-line")
-            .attr("x1", chart.xScale(d.Year))
-            .attr("y1", chart.yScale(d.TransistorCount))
-            .attr("x2", chart.xScale(d.Year))
-            .attr("y2", height)
-            .attr("stroke", "gray")
-            .attr("stroke-dasharray", "2,2");
+            // Add lines to axes
+            chart.chartSvg.append("line")
+                .attr("class", "cpu-annotation-axis-line")
+                .attr("x1", chart.xScale(d.Year))
+                .attr("y1", chart.yScale(d.TransistorCount))
+                .attr("x2", chart.xScale(d.Year))
+                .attr("y2", height)
+                .attr("stroke", "gray")
+                .attr("stroke-dasharray", "2,2");
 
-        chart.chartSvg.append("line")
-            .attr("class", "cpu-annotation-axis-line")
-            .attr("x1", chart.xScale(d.Year))
-            .attr("y1", chart.yScale(d.TransistorCount))
-            .attr("x2", 0)
-            .attr("y2", chart.yScale(d.TransistorCount))
-            .attr("stroke", "gray")
-            .attr("stroke-dasharray", "2,2");
-    })
+            chart.chartSvg.append("line")
+                .attr("class", "cpu-annotation-axis-line")
+                .attr("x1", chart.xScale(d.Year))
+                .attr("y1", chart.yScale(d.TransistorCount))
+                .attr("x2", 0)
+                .attr("y2", chart.yScale(d.TransistorCount))
+                .attr("stroke", "gray")
+                .attr("stroke-dasharray", "2,2");
+        }
+    )
         .on("mouseout", function () {
             tooltip.style("display", "none");
 
@@ -561,7 +570,7 @@ function addCPUAnnotations() {
             chart.chartSvg.selectAll(".cpu-annotation-axis-line").remove();
         });
 
-    // Add a line connecting to the main chart line
+// Add a line connecting to the main chart line
     annotations.append("line")
         .attr("x1", 0)
         .attr("y1", 0)
@@ -570,14 +579,15 @@ function addCPUAnnotations() {
         .attr("stroke", "black")
         .attr("stroke-dasharray", "2,2");
 
-    // Add a dot on the main chart line
+// Add a dot on the main chart line
     annotations.append("circle")
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", 3)
-        .attr("fill", "steelblue");
+        .attr("fill", "steelblue")
+        .call(pulse);
 
-    // Add the CPU name
+// Add the CPU name
     annotations.append("text")
         .attr("x", 0)
         .attr("y", -35)
@@ -588,6 +598,19 @@ function addCPUAnnotations() {
     annotations.transition()
         .duration(1000)  // 1 second fade-in
         .attr("opacity", 1);  // Fade to full opacity
+}
+
+function pulse(selection) {
+    selection
+        .transition()
+        .duration(1000)
+        .attr("r", 5)
+        .transition()
+        .duration(1000)
+        .attr("r", 3)
+        .on("end", function () {
+            pulse(d3.select(this));
+        });
 }
 
 function createDateRangeSlider(containerSelector, initialStartYear, initialEndYear, onRangeChange) {
