@@ -1,5 +1,5 @@
 const CONFIG = {
-    AXIS_TRANSITION_TIME: 100
+    AXIS_TRANSITION_TIME: 75
 };
 
 /* All of the UI elements (except for the chart elements.)  */
@@ -226,7 +226,7 @@ function displayScene(scene) {
             ui.mosfetScaleToggle.checked = false;
 
             // Animate the end year slider moving min to max over a few seconds.
-            state.cancelYearAnimation = animateYearSlider(1971, 2021, 20000);
+            state.cancelYearAnimation = animateYearSlider(1971, 2021, 10000);
 
             break;
         case 2:
@@ -316,7 +316,7 @@ async function initializeChart() {
     });
 
     // Pre-process the CPU data (parse date, etc.)
-    chart.cpuData.forEach((d, index) => {
+    chart.cpuData.forEach((d) => {
         const parsedYear = d3.timeParse("%Y")(d.Year);
         d.Year = parsedYear;
         d.Process = parseFloat(d.Process.replace(/,/g, ''));
