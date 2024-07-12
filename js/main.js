@@ -180,13 +180,24 @@ function displayScene(scene) {
 
     // Update the navigation buttons.
     ui.beginBtn.style.display = state.currentScene === 0 ? 'inline-block' : 'none';
+    ui.beginBtn.classList.remove('pulse');
     ui.backBtn.style.display = state.currentScene > 0 ? 'inline-block' : 'none';
+
+    //ui.beginBtn.classList.remove('pulse');
+    ui.scaleToggle.classList.remove('pulse-5s');
+    ui.mooresLawToggle.classList.remove('pulse-5s');
+    ui.cpuToggle.classList.remove('pulse-5s');
+    ui.mosfetScaleToggle.classList.remove('pulse-5s');
+
     if (state.currentScene === 0) {
         ui.nextBtn.style.display = 'none';
+        ui.beginBtn.classList.add('pulse');
     } else if (state.currentScene < state.sceneCount) {
         ui.nextBtn.style.display = 'inline-block';
+        ui.nextBtn.classList.add('pulse');
         ui.nextBtn.disabled = false;
     } else {
+        ui.nextBtn.classList.remove('pulse');
         ui.nextBtn.disabled = true;
     }
     ui.progressIndicator.style.display = state.currentScene > 0 ? 'flex' : 'none';
@@ -261,6 +272,11 @@ function displayScene(scene) {
             ui.mooresLawToggle.checked = false;
             ui.cpuToggle.checked = false;
             ui.mosfetScaleToggle.checked = false;
+
+            ui.scaleToggle.classList.add('pulse');
+            ui.mooresLawToggle.classList.add('pulse');
+            ui.cpuToggle.classList.add('pulse-5s');
+            ui.mosfetScaleToggle.classList.add('pulse-5s');
 
             break;
         default:
@@ -358,7 +374,7 @@ async function initializeChart() {
         .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Transistor Count (Log Scale)");
+        .text("Log\u2082 of Transistor Count");
 
     // Add grid lines
     chart.chartSvg.append("g")
@@ -421,7 +437,7 @@ function updateChart() {
         .call(d3.axisBottom(chart.xScale).ticks(10));
 
     chart.chartSvg.select(".y-axis-label")
-        .text(ui.scaleToggle.checked ? "Transistor Count (Log Scale)" : "Transistor Count");
+        .text(ui.scaleToggle.checked ? "Log\u2082 of Transistor Count" : "Transistor Count");
 
     chart.chartSvg.select(".y-axis")
         .transition().duration(CONFIG.AXIS_TRANSITION_TIME)
